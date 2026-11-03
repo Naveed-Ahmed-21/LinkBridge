@@ -2,12 +2,18 @@
 set -euo pipefail
 
 if [[ -f ".fvmrc" ]]; then
-  if ! command -v fvm >/dev/null 2>&1; then
-    echo ".fvmrc exists but FVM is not installed."
-    exit 1
+  if command -v fvm >/dev/null 2>&1; then
+    FLUTTER_CMD=(fvm flutter)
+    DART_CMD=(fvm dart)
+  else
+    if ! command -v flutter >/dev/null 2>&1; then
+      echo ".fvmrc exists but neither FVM nor Flutter was found in PATH."
+      exit 1
+    fi
+    echo "Warning: .fvmrc exists but FVM is not installed. Falling back to Flutter in PATH."
+    FLUTTER_CMD=(flutter)
+    DART_CMD=(dart)
   fi
-  FLUTTER_CMD=(fvm flutter)
-  DART_CMD=(fvm dart)
 else
   if ! command -v flutter >/dev/null 2>&1; then
     echo "Flutter was not found in PATH."
